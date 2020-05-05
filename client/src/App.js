@@ -9,21 +9,25 @@ class App extends Component {
     const params = this.getHashParams();
     this.state = {
       value: "",
-      items: [, ,],
+      queue: [],
     };
     if (params.access_token) {
-      console.log("set access token");
       spotifyWebApi.setAccessToken(params.access_token);
     }
+
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.search = this.search.bind(this);
+    this.addToQueue = this.addToQueue.bind(this);
   }
 
   handleChange(event) {
-    this.setState({ value: event.target.value });
+    this.setState({ value: event.target.value, queue: this.state.queue });
   }
 
   handleSubmit(event) {
+    // this.addToQueue(this.search(this.state.value));
+    this.setState({ executed: undefined, queue: this.state.queue });
     this.search(this.state.value);
     event.preventDefault();
   }
@@ -41,25 +45,95 @@ class App extends Component {
 
   search = (query) => {
     spotifyWebApi.searchTracks(query).then((response) => {
-      var items = response.tracks.items;
-      this.state.items = items;
-      console.log(this.state.items);
+      this.setState({
+        value: "",
+        items: response.tracks.items,
+        queue: this.state.queue,
+        // this.state.track = response.tracks.items[0].uri;
+      });
     });
   };
 
+  addToQueue = (trackURI) => {
+    spotifyWebApi.addToQueue(trackURI).then((response) => {
+      console.log("success");
+    });
+  };
+
+  getNowPlaying() {
+    spotifyWebApi.getMyCurrentPlaybackState().then((response) => {
+      console.log(response.progress_ms);
+    });
+  }
+
   render() {
-    const addToQueue = (trackURI) => {
-      spotifyWebApi.addToQueue(trackURI).then((response) => {
-        console.log(response);
-      });
+    var itemList = undefined;
+    var queueList = undefined;
+    var text = undefined;
+
+    const searchResults = (aList, text) => {
+      return (
+        <div>
+          <p>{text}</p>
+          <ol>{aList}</ol>
+        </div>
+      );
     };
+
+    //
+    const queue = this.state.queue;
+
+    queueList = queue.map((item, index) => {
+      return (
+        <li key={index}>
+          <p>{item.name}</p>
+        </li>
+      );
+    });
+    //
+
+    const realList = (aList) => {
+      return (
+        <div>
+          <ol>{aList}</ol>
+        </div>
+      );
+    };
+
+    if (this.state.items) {
+      const items = this.state.items;
+      text = "Search Results: ";
+      itemList = items.map((item, index) => {
+        return (
+          <li key={index}>
+            <button
+              onClick={() => {
+                this.setState({
+                  executed: "yes",
+                  queue: [...this.state.queue, item],
+                });
+                this.addToQueue(item.uri);
+              }}
+            >
+              {item.name}
+            </button>
+          </li>
+        );
+      });
+    }
+
+    if (this.state.executed) {
+      itemList = undefined;
+      text = undefined;
+    }
+
     return (
       <div>
         <a href="http://localhost:8888">
           <button>Login With Spotify</button>
         </a>
 
-        <button onClick={addToQueue}>add to queue</button>
+        {/* <button onClick={addToQueue}>add to queue</button> */}
         <form onSubmit={this.handleSubmit}>
           <label>
             Name:
@@ -71,6 +145,9 @@ class App extends Component {
           </label>
           <input type="submit" value="Submit" />
         </form>
+
+        {searchResults(itemList, text)}
+        {realList(queueList)}
       </div>
     );
   }
