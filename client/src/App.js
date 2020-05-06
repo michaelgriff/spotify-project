@@ -9,7 +9,6 @@ class App extends Component {
     const params = this.getHashParams();
     this.state = {
       value: "",
-      queue: [],
     };
     if (params.access_token) {
       spotifyWebApi.setAccessToken(params.access_token);
@@ -19,6 +18,8 @@ class App extends Component {
     this.handleSubmit = this.handleSubmit.bind(this);
     this.search = this.search.bind(this);
     this.addToQueue = this.addToQueue.bind(this);
+    this.skipToNext = this.skipToNext.bind(this);
+    this.likeAndSort = this.likeAndSort.bind(this);
   }
 
   handleChange(event) {
@@ -66,31 +67,68 @@ class App extends Component {
     });
   }
 
+  skipToNext() {
+    spotifyWebApi.skipToNext().then(() => {
+      console.log("skipped");
+    });
+  }
+
+  likeAndSort = (item) => {
+    var tempQueue = this.state.queue;
+    var index = this.state.queue.indexOf(item);
+    tempQueue[index].likeTot++;
+
+    function compare(a, b) {
+      if (a.likeTot < b.likeTot) return 1;
+      if (b.likeTot < a.likeTot) return -1;
+      return 0;
+    }
+
+    tempQueue.sort(compare);
+    console.log(tempQueue);
+    this.setState({ queue: tempQueue });
+  };
+
   render() {
     var itemList = undefined;
     var queueList = undefined;
     var text = undefined;
 
-    const searchResults = (aList, text) => {
-      return (
-        <div>
-          <p>{text}</p>
-          <ol>{aList}</ol>
-        </div>
-      );
+    const removeFromQueue = () => {
+      if (this.state.queue) {
+        var elem = this.state.queue[0];
+        var tempQueue = this.state.queue;
+
+        if (tempQueue.length === 1) {
+          this.setState({ queue: undefined });
+        } else {
+          tempQueue.shift();
+          this.setState({
+            queue: tempQueue,
+          });
+        }
+        this.addToQueue(elem.uri);
+      }
     };
 
-    //
-    const queue = this.state.queue;
-
-    queueList = queue.map((item, index) => {
-      return (
-        <li key={index}>
-          <p>{item.name}</p>
-        </li>
-      );
-    });
-    //
+    if (this.state.queue) {
+      const queue = this.state.queue;
+      queueList = queue.map((item, index) => {
+        return (
+          <li key={index}>
+            <p>{item.name}</p>
+            <p>{item.likeTot}</p>
+            <button
+              onClick={() => {
+                this.likeAndSort(item);
+              }}
+            >
+              Like
+            </button>
+          </li>
+        );
+      });
+    }
 
     const realList = (aList) => {
       return (
@@ -108,11 +146,18 @@ class App extends Component {
           <li key={index}>
             <button
               onClick={() => {
-                this.setState({
-                  executed: "yes",
-                  queue: [...this.state.queue, item],
-                });
-                this.addToQueue(item.uri);
+                item.likeTot = 0;
+                if (this.state.queue) {
+                  this.setState({
+                    executed: "yes",
+                    queue: [...this.state.queue, item],
+                  });
+                } else {
+                  this.setState({
+                    executed: "yes",
+                    queue: [item],
+                  });
+                }
               }}
             >
               {item.name}
@@ -121,6 +166,15 @@ class App extends Component {
         );
       });
     }
+
+    const searchResults = (aList, text) => {
+      return (
+        <div>
+          <p>{text}</p>
+          <ol>{aList}</ol>
+        </div>
+      );
+    };
 
     if (this.state.executed) {
       itemList = undefined;
@@ -132,8 +186,9 @@ class App extends Component {
         <a href="http://localhost:8888">
           <button>Login With Spotify</button>
         </a>
+        <button onClick={() => removeFromQueue()}>Add To Queue</button>
+        <button onClick={() => this.skipToNext()}>Skip to Next</button>
 
-        {/* <button onClick={addToQueue}>add to queue</button> */}
         <form onSubmit={this.handleSubmit}>
           <label>
             Name:
@@ -154,73 +209,3 @@ class App extends Component {
 }
 
 export default App;
-
-// import React, { Component } from "react";
-
-// import "./App.css";
-// // import Spotify from "spotify-web-api-js";
-
-// // const spotifyWebApi = new Spotify();
-
-// class App extends Component {
-//   constructor() {
-//     super();
-//     const params = this.getHashParams();
-//     this.state = {
-//       nowPlaying: {
-//         name: "Michael",
-//       },
-//     };
-//     if (params.access_token) {
-//       console.log("set access token");
-//       // spotifyWebApi.setAccessToken(params.access_token);
-//     }
-//   }
-
-//   getHashParams() {
-//     var hashParams = {};
-//     var e,
-//       r = /([^&;=]+)=?([^&;]*)/g,
-//       q = window.location.hash.substring(1);
-//     while ((e = r.exec(q))) {
-//       hashParams[e[1]] = decodeURIComponent(e[2]);
-//     }
-//     return hashParams;
-//   }
-
-//   getNowPlaying() {
-//     console.log("hihi");
-//     this.setState({
-//       nowPlaying: {
-//         name: "hi",
-//         image: "hi",
-//       },
-//     });
-//     // spotifyWebApi.getMyCurrentPlaybackState().then((response) => {
-//     // });
-//   }
-
-//   addSongToQueue() {
-//     var trackURI = "spotify:track:1F1QmI8TMHir9SUFrooq5F";
-//     console.log("added song to queue");
-//     // spotifyWebApi.addToQueue(trackURI).then((response) => {
-//     //   console.log(response);
-//     //   console.log("success");
-//     // });
-//   }
-
-//   render() {
-//     return (
-//       <div className="App">
-//         <a href="http://localhost:8888">
-//           <button>Login With Spotify</button>
-//         </a>
-//         <p>{this.state.nowPlaying.name}</p>
-
-//         <button onClick={() => this.getNowPlaying}>Add Song to Queue</button>
-//       </div>
-//     );
-//   }
-// }
-
-// export default App;
