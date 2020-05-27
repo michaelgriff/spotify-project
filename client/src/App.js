@@ -1,6 +1,11 @@
 import React, { Component } from "react";
 import Spotify from "spotify-web-api-js";
 import { w3cwebsocket as W3CWebSocket } from "websocket";
+import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+
+import Home from "./pages/Home";
+import Users from "./pages/Users";
+import About from "./pages/About";
 
 const client = new W3CWebSocket("ws://localhost:8000");
 
@@ -148,11 +153,11 @@ class App extends Component {
     });
   }
 
-  skipToNext() {
-    spotifyWebApi.skipToNext().then(() => {
-      console.log("skipped");
-    });
-  }
+  // skipToNext() {
+  //   spotifyWebApi.skipToNext().then(() => {
+  //     console.log("skipped");
+  //   });
+  // }
 
   likeAndSort = (item) => {
     var tempQueue = this.state.queue;
@@ -235,37 +240,69 @@ class App extends Component {
     }
 
     return (
-      <div>
-        <a href="http://localhost:8888">
-          <button>Login With Spotify</button>
-        </a>
-        <button
-          onClick={() => {
-            this.remove();
-            this.addToQueue(this.state.queue[0].uri);
-          }}
-        >
-          Add To Queue
-        </button>
-        <button onClick={() => this.skipToNext()}>Skip to Next</button>
+      <Router>
+        <div>
+          <nav>
+            <ul>
+              <li>
+                <Link to="/">Home</Link>
+              </li>
+              <li>
+                <Link to="/about">About</Link>
+              </li>
+              <li>
+                <Link to="/users">Users</Link>
+              </li>
+            </ul>
+          </nav>
 
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Name:
-            <input
-              type="text"
-              value={this.state.value}
-              onChange={this.handleChange}
-            />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-
-        {searchResults(itemList, text)}
-        {realList(queueList)}
-      </div>
+          {/* A <Switch> looks through its children <Route>s and
+              renders the first one that matches the current URL. */}
+          <Switch>
+            <Route path="/about">
+              <About />
+            </Route>
+            <Route path="/users">
+              <Users />
+            </Route>
+            <Route path="/">
+              <Home />
+            </Route>
+          </Switch>
+        </div>
+      </Router>
     );
   }
 }
 
 export default App;
+
+// <div>
+//   <a href="http://localhost:8888">
+//     <button>Login With Spotify</button>
+//   </a>
+//   <button
+//     onClick={() => {
+//       this.remove();
+//       this.addToQueue(this.state.queue[0].uri);
+//     }}
+//   >
+//     Add To Queue
+//   </button>
+//   <button onClick={() => this.skipToNext()}>Skip to Next</button>
+
+//   <form onSubmit={this.handleSubmit}>
+//     <label>
+//       Name:
+//       <input
+//         type="text"
+//         value={this.state.value}
+//         onChange={this.handleChange}
+//       />
+//     </label>
+//     <input type="submit" value="Submit" />
+//   </form>
+
+//   {searchResults(itemList, text)}
+//   {realList(queueList)}
+// </div>
