@@ -1,5 +1,8 @@
 import React, { Component } from "react";
 import Spotify from "spotify-web-api-js";
+import { w3cwebsocket as W3CWebSocket } from "websocket";
+
+const client = new W3CWebSocket("ws://localhost:8000");
 
 const spotifyWebApi = new Spotify();
 
@@ -22,12 +25,90 @@ class App extends Component {
     this.likeAndSort = this.likeAndSort.bind(this);
   }
 
+  searchAdd = (item) => {
+    client.send(
+      JSON.stringify({
+        type: "searchAdd",
+        item: item,
+      })
+    );
+  };
+
+  likeSort = (item) => {
+    client.send(
+      JSON.stringify({
+        type: "likeSort",
+        item: item,
+      })
+    );
+  };
+
+  remove = () => {
+    client.send(
+      JSON.stringify({
+        type: "remove",
+      })
+    );
+  };
+
+  componentDidMount() {
+    client.onopen = () => {
+      console.log("WebSocket Client Connected");
+    };
+
+    client.onmessage = (message) => {
+      const dataFromServer = JSON.parse(message.data);
+
+      if (dataFromServer.type === "searchAdd") {
+        if (this.state.queue) {
+          this.setState({
+            executed: "yes",
+            queue: [...this.state.queue, dataFromServer.item],
+          });
+        } else {
+          this.setState({
+            executed: "yes",
+            queue: [dataFromServer.item],
+          });
+        }
+      } else if (dataFromServer.type === "likeSort") {
+        var tempQueue = this.state.queue;
+        tempQueue.find(function (element) {
+          if (element.uri === dataFromServer.item.uri) {
+            element.likeTot++;
+          }
+        });
+
+        function compare(a, b) {
+          if (a.likeTot < b.likeTot) return 1;
+          if (b.likeTot < a.likeTot) return -1;
+          return 0;
+        }
+
+        tempQueue.sort(compare);
+        this.setState({ queue: tempQueue });
+      } else if (dataFromServer.type === "remove") {
+        if (this.state.queue) {
+          var tempQueue = this.state.queue;
+
+          if (tempQueue.length === 1) {
+            this.setState({ queue: undefined });
+          } else {
+            tempQueue.shift();
+            this.setState({
+              queue: tempQueue,
+            });
+          }
+        }
+      }
+    };
+  }
+
   handleChange(event) {
     this.setState({ value: event.target.value, queue: this.state.queue });
   }
 
   handleSubmit(event) {
-    // this.addToQueue(this.search(this.state.value));
     this.setState({ executed: undefined, queue: this.state.queue });
     this.search(this.state.value);
     event.preventDefault();
@@ -56,7 +137,7 @@ class App extends Component {
   };
 
   addToQueue = (trackURI) => {
-    spotifyWebApi.addToQueue(trackURI).then((response) => {
+    spotifyWebApi.addToQueue(trackURI).then(() => {
       console.log("success");
     });
   };
@@ -85,7 +166,6 @@ class App extends Component {
     }
 
     tempQueue.sort(compare);
-    console.log(tempQueue);
     this.setState({ queue: tempQueue });
   };
 
@@ -93,23 +173,6 @@ class App extends Component {
     var itemList = undefined;
     var queueList = undefined;
     var text = undefined;
-
-    const removeFromQueue = () => {
-      if (this.state.queue) {
-        var elem = this.state.queue[0];
-        var tempQueue = this.state.queue;
-
-        if (tempQueue.length === 1) {
-          this.setState({ queue: undefined });
-        } else {
-          tempQueue.shift();
-          this.setState({
-            queue: tempQueue,
-          });
-        }
-        this.addToQueue(elem.uri);
-      }
-    };
 
     if (this.state.queue) {
       const queue = this.state.queue;
@@ -120,7 +183,7 @@ class App extends Component {
             <p>{item.likeTot}</p>
             <button
               onClick={() => {
-                this.likeAndSort(item);
+                this.likeSort(item);
               }}
             >
               Like
@@ -147,17 +210,7 @@ class App extends Component {
             <button
               onClick={() => {
                 item.likeTot = 0;
-                if (this.state.queue) {
-                  this.setState({
-                    executed: "yes",
-                    queue: [...this.state.queue, item],
-                  });
-                } else {
-                  this.setState({
-                    executed: "yes",
-                    queue: [item],
-                  });
-                }
+                this.searchAdd(item);
               }}
             >
               {item.name}
@@ -186,7 +239,14 @@ class App extends Component {
         <a href="http://localhost:8888">
           <button>Login With Spotify</button>
         </a>
-        <button onClick={() => removeFromQueue()}>Add To Queue</button>
+        <button
+          onClick={() => {
+            this.remove();
+            this.addToQueue(this.state.queue[0].uri);
+          }}
+        >
+          Add To Queue
+        </button>
         <button onClick={() => this.skipToNext()}>Skip to Next</button>
 
         <form onSubmit={this.handleSubmit}>
