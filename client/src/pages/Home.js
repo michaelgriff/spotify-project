@@ -1,13 +1,17 @@
-import React, { Component } from "react";
+import React from "react";
 
 import SkipToNext from "../components/SkipButton";
+import LoginButton from "../components/LoginButton";
+import AddToQueueButton from '../components/AddToQueueButton';
 
-class Home extends Component {
-  const MyContext = React.createContext();
-
-  render() {
-    return <SkipToNext />;
-  }
+const Home = () => {
+  return(
+    <div>
+      <SkipToNext />
+      <LoginButton />
+      <AddToQueueButton />
+    </div>
+  );
 }
 
 export default Home;

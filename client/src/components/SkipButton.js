@@ -1,16 +1,16 @@
-import React, { Component } from "react";
+import React from "react";
 
-class SkipToNext extends Component {
-  skipToNext() {
-    // spotifyWebApi.skipToNext().then(() => {
-    //   console.log("skipped");
-    // });
-    alert("skipped!");
+import { spotifyAuthContext } from '../contexts/spotifyAuthContext';
+
+const SkipToNext = () => {
+  const spotifyWebApi = React.useContext(spotifyAuthContext);
+
+  const skipToNext = async (spotifyClient) => {
+    await spotifyClient.skipToNext()
+    alert("skipped");
   }
 
-  render() {
-    return <button onClick={this.skipToNext}>Skip To Next</button>;
-  }
+  return <button onClick={() => skipToNext(spotifyWebApi)}>Skip To Next</button>;
 }
 
 export default SkipToNext;

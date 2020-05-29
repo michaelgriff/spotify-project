@@ -1,7 +1,7 @@
-import React, { Component } from "react";
+import React from "react";
 
-class AddToQueue extends Component {
-  remove = () => {
+const AddToQueueButton = () => {
+  const remove = () => {
     // client.send(
     //   JSON.stringify({
     //     type: "remove",
@@ -10,24 +10,22 @@ class AddToQueue extends Component {
     alert("added to next");
   };
 
-  addToQueue = (trackURI) => {
-    spotifyWebApi.addToQueue(trackURI).then(() => {
-      console.log("success");
-    });
+  const addToQueue = (trackURI) => {
+    // spotifyWebApi.addToQueue(trackURI).then(() => {
+    //   console.log("success");
+    // });
   };
 
-  render() {
-    return (
-      <button
-        onClick={() => {
-          this.remove();
-          //   this.addToQueue(this.state.queue[0].uri);
-        }}
-      >
-        Add To Queue
-      </button>
-    );
-  }
+  return (
+    <button
+      onClick={() => {
+        this.remove();
+        //   this.addToQueue(this.state.queue[0].uri);
+      }}
+    >
+      Add To Queue
+    </button>
+  );
 }
 
-export default AddToQueue;
+export default AddToQueueButton;

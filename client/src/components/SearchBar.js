@@ -1,5 +1,7 @@
 import React, { Component } from "react";
 
+import { spotifyAuthContext } from './contexts/spotifyAuthContext';
+
 class SearchBar extends Component {
   handleChange(event) {
     // this.setState({ value: event.target.value, queue: this.state.queue });
@@ -21,22 +23,24 @@ class SearchBar extends Component {
     //   });
     // });
     alert("searched");
-  };
+  }
 
   render() {
-    return (
-      <form onSubmit={this.handleSubmit}>
-        <label>
-          Name:
-          <input
-            type="text"
-            value={this.state.value}
-            onChange={this.handleChange}
-          />
-        </label>
-        <input type="submit" value="Submit" />
-      </form>
-    );
+    <spotifyAuthContext.Consumer>
+      return (
+        <form onSubmit={this.handleSubmit}>
+          <label>
+            Name:
+            <input
+              type="text"
+              value={this.state.value}
+              onChange={this.handleChange}
+            />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+      );
+    </spotifyAuthContext.Consumer>
   }
 }
 
