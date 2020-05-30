@@ -1,2 +1,3 @@
 .DS_Store
 .vsls.json
+/node_modules
