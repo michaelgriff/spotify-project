@@ -4,8 +4,9 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 
 import { spotifyAuthContext } from './contexts/spotifyAuthContext';
 
-import Home from "./pages/Home";
-import Users from "./pages/Users";
+import Main from "./pages/Main";
+import Player from './pages/Player';
+import CreateRoom from './pages/CreateRoom';
 import About from "./pages/About";
 
 import getHashParams from './utils/getHashParams';
@@ -13,26 +14,29 @@ import getHashParams from './utils/getHashParams';
 const spotifyWebApi = new Spotify();
 
 const App = () => {
-  // we need to get the parameters of the 
+
   const params = getHashParams(window);
   if (params.access_token) {
     spotifyWebApi.setAccessToken(params.access_token);
   }
 
   return (
-    <spotifyAuthContext.Provider value={spotifyWebApi}>
+    <spotifyAuthContext.Provider value={{spotifyWebApi}}>
       <Router>
-        <h1>{params.access_token}</h1>
+        <h1>Spotify Share</h1>
         <nav>
           <ul>
             <li>
-              <Link to="/">Home</Link>
+              <Link to="/">Main</Link>
             </li>
             <li>
               <Link to="/about">About</Link>
             </li>
             <li>
-              <Link to="/users">Users</Link>
+              <Link to="/create-room">Create Room</Link>
+            </li>
+            <li>
+              <Link to="/player">Player</Link>
             </li>
           </ul>
         </nav>
@@ -41,11 +45,14 @@ const App = () => {
           <Route path="/about">
             <About />
           </Route>
-          <Route path="/users">
-            <Users />
+          <Route path="/create-room">
+            <CreateRoom />
+          </Route>
+          <Route path="/player">
+            <Player />
           </Route>
           <Route path="/">
-            <Home />
+            <Main />
           </Route>
         </Switch>
       </Router>

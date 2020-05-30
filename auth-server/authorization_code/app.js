@@ -6,7 +6,7 @@
  * For more information, read
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
-var envVars = require("../env/env.production");
+var envVars = require("../env/production");
 var express = require("express"); // Express web server framework
 var request = require("request"); // "Request" library
 var cors = require("cors");
@@ -111,7 +111,7 @@ app.get("/callback", function (req, res) {
 
         // we can also pass the token to the browser to make requests from there
         res.redirect(
-          "http://localhost:3000/#" +
+          "http://localhost:3001/player/" +
             querystring.stringify({
               access_token: access_token,
               refresh_token: refresh_token,

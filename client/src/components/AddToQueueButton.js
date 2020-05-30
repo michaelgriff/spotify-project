@@ -1,6 +1,10 @@
 import React from "react";
 
+import { spotifyAuthContext } from '../contexts/spotifyAuthContext';
+
 const AddToQueueButton = () => {
+  const { spotifyWebApi } = React.useContext(spotifyAuthContext);
+
   const remove = () => {
     // client.send(
     //   JSON.stringify({
@@ -10,10 +14,10 @@ const AddToQueueButton = () => {
     alert("added to next");
   };
 
-  const addToQueue = (trackURI) => {
-    // spotifyWebApi.addToQueue(trackURI).then(() => {
-    //   console.log("success");
-    // });
+  const addToQueue = (trackURI, ) => {
+    spotifyWebApi.addToQueue(trackURI).then(() => {
+      console.log("success");
+    });
   };
 
   return (
