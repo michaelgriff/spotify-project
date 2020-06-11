@@ -1,9 +1,11 @@
-import React from "react";
+import React, { useState } from "react";
 
-import { spotifyAuthContext } from "./contexts/spotifyAuthContext";
+import SearchResults from "./SearchResults";
+
+import { spotifyAuthContext } from "../contexts/spotifyAuthContext";
 
 const SearchBar = () => {
-  const [state, setState] = useState();
+  const [state, setState] = useState({ value: "" });
 
   const { spotifyWebApi } = React.useContext(spotifyAuthContext);
 
@@ -26,13 +28,17 @@ const SearchBar = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        Name:
-        <input type="text" value={state.value} onChange={handleChange} />
-      </label>
-      <input type="submit" value="Submit" />
-    </form>
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Name:
+          <input type="text" value={state.value} onChange={handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+      {state.items ? <SearchResults items={state.items} /> : null}
+      {/* <SearchResults items={state.items} /> */}
+    </div>
   );
 };
 

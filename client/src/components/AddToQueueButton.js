@@ -14,11 +14,6 @@ const AddToQueueButton = (props) => {
   //   alert("added to next");
   // };
 
-  // const skipToNext = async (spotifyClient) => {
-  //   await spotifyClient.skipToNext()
-  //   alert("skipped");
-  // };
-
   const addToQueue = async (spotifyClient, trackURI) => {
     await spotifyClient.addToQueue(trackURI);
     alert("added to queue");

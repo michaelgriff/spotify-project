@@ -1,10 +1,11 @@
-'use strict';
+"use strict";
 
 const getHashParams = (window) => {
   const hashParams = {};
-  var e,
-  r = /([^&;=]+)=?([^&;]*)/g,
-  q = window.location.hash.substring(1);
+  let e;
+  let r = /([^&;=]+)=?([^&;]*)/g;
+  let q = window.location.hash.substring(1);
+  console.log(window.location);
   console.log(`q: ${q}`);
   while ((e = r.exec(q))) {
     console.log(e);
@@ -13,6 +14,6 @@ const getHashParams = (window) => {
     hashParams[e[1]] = decodeURIComponent(e[2]);
   }
   return hashParams;
-}
+};
 
 export default getHashParams;
