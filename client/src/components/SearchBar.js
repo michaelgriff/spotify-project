@@ -1,47 +1,39 @@
-import React, { Component } from "react";
+import React from "react";
 
-import { spotifyAuthContext } from './contexts/spotifyAuthContext';
+import { spotifyAuthContext } from "./contexts/spotifyAuthContext";
 
-class SearchBar extends Component {
-  handleChange(event) {
-    // this.setState({ value: event.target.value, queue: this.state.queue });
-  }
+const SearchBar = () => {
+  const [state, setState] = useState();
 
-  handleSubmit(event) {
-    // this.setState({ executed: undefined, queue: this.state.queue });
-    // this.search(this.state.value);
-    this.search("search");
+  const { spotifyWebApi } = React.useContext(spotifyAuthContext);
+
+  const handleChange = (event) => {
+    setState({ value: event.target.value });
+  };
+
+  const handleSubmit = (event) => {
+    search(spotifyWebApi, state.value);
     event.preventDefault();
-  }
+  };
 
-  search = (query) => {
-    // spotifyWebApi.searchTracks(query).then((response) => {
-    //   this.setState({
-    //     value: "",
-    //     items: response.tracks.items,
-    //     queue: this.state.queue,
-    //   });
-    // });
+  const search = async (spotifyClient, query) => {
+    await spotifyClient.searchTracks(query).then((response) => {
+      setState({
+        items: response.tracks.items,
+      });
+    });
     alert("searched");
-  }
+  };
 
-  render() {
-    <spotifyAuthContext.Consumer>
-      return (
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Name:
-            <input
-              type="text"
-              value={this.state.value}
-              onChange={this.handleChange}
-            />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-      );
-    </spotifyAuthContext.Consumer>
-  }
-}
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        Name:
+        <input type="text" value={state.value} onChange={handleChange} />
+      </label>
+      <input type="submit" value="Submit" />
+    </form>
+  );
+};
 
 export default SearchBar;
