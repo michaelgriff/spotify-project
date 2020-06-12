@@ -8,7 +8,8 @@ const SearchResults = (props) => {
         <button
           onClick={() => {
             item.likeTot = 0;
-            this.searchAdd(item);
+            props.setQueue([...props.queue, item]);
+            props.setResults(null);
           }}
         >
           {item.name}

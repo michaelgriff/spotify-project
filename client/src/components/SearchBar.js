@@ -4,27 +4,24 @@ import SearchResults from "./SearchResults";
 
 import { spotifyAuthContext } from "../contexts/spotifyAuthContext";
 
-const SearchBar = () => {
-  const [state, setState] = useState({ value: "" });
+const SearchBar = (props) => {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState();
 
   const { spotifyWebApi } = React.useContext(spotifyAuthContext);
 
   const handleChange = (event) => {
-    setState({ value: event.target.value });
+    setQuery(event.target.value);
   };
 
   const handleSubmit = (event) => {
-    search(spotifyWebApi, state.value);
+    search(spotifyWebApi, query);
     event.preventDefault();
   };
 
   const search = async (spotifyClient, query) => {
-    await spotifyClient.searchTracks(query).then((response) => {
-      setState({
-        items: response.tracks.items,
-      });
-    });
-    alert("searched");
+    const response = await spotifyClient.searchTracks(query);
+    setResults(response.tracks.items);
   };
 
   return (
@@ -32,12 +29,18 @@ const SearchBar = () => {
       <form onSubmit={handleSubmit}>
         <label>
           Name:
-          <input type="text" value={state.value} onChange={handleChange} />
+          <input type="text" value={query} onChange={handleChange} />
         </label>
         <input type="submit" value="Submit" />
       </form>
-      {state.items ? <SearchResults items={state.items} /> : null}
-      {/* <SearchResults items={state.items} /> */}
+      {results ? (
+        <SearchResults
+          items={results}
+          setQueue={props.setQueue}
+          queue={props.queue}
+          setResults={setResults}
+        />
+      ) : null}
     </div>
   );
 };
