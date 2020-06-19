@@ -75,7 +75,7 @@ router.get('/callback', (req, res) => {
 
         // we can also pass the token to the browser to make requests from there
         res.redirect(
-          `http://localhost:3001/player/${querystring.stringify({
+          `http://localhost:3000/player/${querystring.stringify({
             access_token: accessToken,
             refresh_token: refreshToken,
           })}`,

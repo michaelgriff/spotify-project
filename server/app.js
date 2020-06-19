@@ -14,10 +14,7 @@ const spotifyAuthorizationRouter = require('./routes/spotifyAuthorization');
 
 const app = express();
 
-app
-  .use(express.static(`${__dirname}/public`))
-  .use(cors())
-  .use(cookieParser());
+app.use(cors()).use(cookieParser());
 
 app.use('/', spotifyAuthorizationRouter);
 
