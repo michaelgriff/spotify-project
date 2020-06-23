@@ -16,6 +16,7 @@ const SearchBar = (props) => {
 
   const handleSubmit = (event) => {
     search(spotifyWebApi, query);
+    setQuery("");
     event.preventDefault();
   };
 

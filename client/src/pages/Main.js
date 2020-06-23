@@ -1,25 +1,34 @@
-import React from "react";
-import { Link } from "react-router-dom";
-
+import React, { useState } from "react";
+import { Link, Redirect } from "react-router-dom";
 
 const Main = () => {
   // create a room button
   // join a room text box
+  const [query, setQuery] = useState("");
+  const [submit, setSubmit] = useState();
 
-  return(
+  const handleChange = (event) => {
+    setQuery(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    setSubmit(1);
+    event.preventDefault();
+  };
+
+  return (
     <div>
       <h1>Main</h1>
       <Link to="/create-room">Create Room</Link>
-      
-      <form >
+
+      <form onSubmit={handleSubmit}>
         <label>
-          Join a room:
-          <input
-            type="text"
-          />
+          Join a Room:
+          <input type="text" value={query} onChange={handleChange} />
         </label>
-        <Link to='/player'>Join</Link>
+        <input type="submit" value="Submit" />
       </form>
+      {submit ? <Redirect to="/player" /> : null}
     </div>
   );
 };

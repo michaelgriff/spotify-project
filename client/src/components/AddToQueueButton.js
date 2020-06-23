@@ -16,7 +16,19 @@ const AddToQueueButton = (props) => {
 
   const addToQueue = async (spotifyClient, trackURI) => {
     await spotifyClient.addToQueue(trackURI);
-    alert("added to queue");
+  };
+
+  const remove = () => {
+    if (props.queue) {
+      let tempQueue = props.queue;
+
+      if (tempQueue.length === 1) {
+        props.setQueue([]);
+      } else {
+        tempQueue.shift();
+        props.setQueue(tempQueue);
+      }
+    }
   };
 
   return (
@@ -24,7 +36,8 @@ const AddToQueueButton = (props) => {
       onClick={() => {
         // this.remove();
         // this.addToQueue(this.state.queue[0].uri);
-        addToQueue(spotifyWebApi, props.trackURI);
+        addToQueue(spotifyWebApi, props.queue[0].uri);
+        remove();
       }}
     >
       Add To Queue
