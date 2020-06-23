@@ -1,47 +1,49 @@
-import React, { Component } from "react";
+import React, { useState } from "react";
 
-import { spotifyAuthContext } from './contexts/spotifyAuthContext';
+import SearchResults from "./SearchResults";
 
-class SearchBar extends Component {
-  handleChange(event) {
-    // this.setState({ value: event.target.value, queue: this.state.queue });
-  }
+import { spotifyAuthContext } from "../contexts/spotifyAuthContext";
 
-  handleSubmit(event) {
-    // this.setState({ executed: undefined, queue: this.state.queue });
-    // this.search(this.state.value);
-    this.search("search");
+const SearchBar = (props) => {
+  const [query, setQuery] = useState("");
+  const [results, setResults] = useState();
+
+  const { spotifyWebApi } = React.useContext(spotifyAuthContext);
+
+  const handleChange = (event) => {
+    setQuery(event.target.value);
+  };
+
+  const handleSubmit = (event) => {
+    search(spotifyWebApi, query);
+    setQuery("");
     event.preventDefault();
-  }
+  };
 
-  search = (query) => {
-    // spotifyWebApi.searchTracks(query).then((response) => {
-    //   this.setState({
-    //     value: "",
-    //     items: response.tracks.items,
-    //     queue: this.state.queue,
-    //   });
-    // });
-    alert("searched");
-  }
+  const search = async (spotifyClient, query) => {
+    const response = await spotifyClient.searchTracks(query);
+    setResults(response.tracks.items);
+  };
 
-  render() {
-    <spotifyAuthContext.Consumer>
-      return (
-        <form onSubmit={this.handleSubmit}>
-          <label>
-            Name:
-            <input
-              type="text"
-              value={this.state.value}
-              onChange={this.handleChange}
-            />
-          </label>
-          <input type="submit" value="Submit" />
-        </form>
-      );
-    </spotifyAuthContext.Consumer>
-  }
-}
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <label>
+          Name:
+          <input type="text" value={query} onChange={handleChange} />
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+      {results ? (
+        <SearchResults
+          items={results}
+          setQueue={props.setQueue}
+          queue={props.queue}
+          setResults={setResults}
+        />
+      ) : null}
+    </div>
+  );
+};
 
 export default SearchBar;
