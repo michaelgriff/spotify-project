@@ -16,7 +16,6 @@ const spotifyWebApi = new Spotify();
 const App = () => {
   const params = getHashParams(window);
   if (params.access_token) {
-    console.log(params);
     spotifyWebApi.setAccessToken(params.access_token);
   }
 
