@@ -3,19 +3,18 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Spotify from "spotify-web-api-js";
 import io from "socket.io-client";
 
-import { spotifyAuthContext } from './contexts/spotifyAuthContext';
+import { spotifyAuthContext } from "./contexts/spotifyAuthContext";
 
 import Main from "./pages/Main";
-import Player from './pages/Player';
-import CreateRoom from './pages/CreateRoom';
+import Player from "./pages/Player";
+import CreateRoom from "./pages/CreateRoom";
 import About from "./pages/About";
 
-import getHashParams from './utils/getHashParams';
+import getHashParams from "./utils/getHashParams";
 
 const spotifyWebApi = new Spotify();
 
 const App = () => {
-
   const params = getHashParams(window);
   if (params.access_token) {
     spotifyWebApi.setAccessToken(params.access_token);
@@ -28,7 +27,7 @@ const App = () => {
   });
 
   return (
-    <spotifyAuthContext.Provider value={{spotifyWebApi}}>
+    <spotifyAuthContext.Provider value={{ spotifyWebApi }}>
       <Router>
         <h1>Spotify Share</h1>
         <nav>
