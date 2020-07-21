@@ -1,7 +1,6 @@
 import React from "react";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Spotify from "spotify-web-api-js";
-import io from "socket.io-client";
 
 import { spotifyAuthContext } from "./contexts/spotifyAuthContext";
 
@@ -19,12 +18,6 @@ const App = () => {
   if (params.access_token) {
     spotifyWebApi.setAccessToken(params.access_token);
   }
-
-  const socket = io("localhost:8888");
-  socket.on("connect", () => {
-    alert("connected");
-    console.log("connected");
-  });
 
   return (
     <spotifyAuthContext.Provider value={{ spotifyWebApi }}>
