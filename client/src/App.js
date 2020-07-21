@@ -1,6 +1,6 @@
 import React from "react";
-import Spotify from "spotify-web-api-js";
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
+import Spotify from "spotify-web-api-js";
 
 import { spotifyAuthContext } from "./contexts/spotifyAuthContext";
 
