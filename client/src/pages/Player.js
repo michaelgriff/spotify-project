@@ -1,9 +1,12 @@
 import React, { useState } from "react";
+import io from "socket.io-client";
 
 import SearchBar from "../components/SearchBar";
 import SongList from "../components/SongList";
 import AddToQueueButton from "../components/AddToQueueButton";
 import SkipButton from "../components/SkipButton";
+
+const socket = io("http://localhost:8888");
 
 const Player = () => {
   const [queue, setQueue] = useState([]);

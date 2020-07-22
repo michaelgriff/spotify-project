@@ -3,13 +3,12 @@ import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 import Spotify from "spotify-web-api-js";
 
 import { spotifyAuthContext } from "./contexts/spotifyAuthContext";
+import getHashParams from "./utils/getHashParams";
 
 import Main from "./pages/Main";
 import Player from "./pages/Player";
 import CreateRoom from "./pages/CreateRoom";
 import About from "./pages/About";
-
-import getHashParams from "./utils/getHashParams";
 
 const spotifyWebApi = new Spotify();
 
