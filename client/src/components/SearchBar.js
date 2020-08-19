@@ -2,20 +2,18 @@ import React, { useState } from "react";
 
 import SearchResults from "./SearchResults";
 
-import { spotifyAuthContext } from "../contexts/spotifyAuthContext";
-
 const SearchBar = (props) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState();
 
-  const { spotifyWebApi } = React.useContext(spotifyAuthContext);
+  // const { spotifyWebApi } = React.useContext(spotifyAuthContext);
 
   const handleChange = (event) => {
     setQuery(event.target.value);
   };
 
   const handleSubmit = (event) => {
-    search(spotifyWebApi, query);
+    // search(spotifyWebApi, query);
     setQuery("");
     event.preventDefault();
   };

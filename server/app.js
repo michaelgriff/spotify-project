@@ -6,6 +6,8 @@
  * For more information, read
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
+import Spotify from 'spotify-web-api-js';
+
 const http = require('http');
 const express = require('express'); // Express web server framework
 const cors = require('cors');
@@ -24,6 +26,8 @@ const server = http.createServer(app);
 app.use(cors()).use(cookieParser());
 app.use('/', spotifyAuthorizationRouter);
 
+const spotifyWebApi = new Spotify();
+
 // set up socket io
 const io = socketio(server);
 io.on('connection', (socket) => {
@@ -40,6 +44,10 @@ io.on('connection', (socket) => {
     const { message, room } = data;
     console.log(`msg: ${message}, room: ${room}`);
     io.to(room).emit('chat', message);
+  });
+
+  socket.on('accessToken', (accessToken) => {
+    spotifyWebApi.setAccessToken(accessToken);
   });
 });
 

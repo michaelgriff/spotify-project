@@ -73,6 +73,10 @@ router.get('/callback', (req, res) => {
           console.log(body);
         });
 
+        // pass accessToken to the room !
+
+        // DO THAT HERE
+
         // we can also pass the token to the browser to make requests from there
         res.redirect(
           `http://localhost:3000/player/${querystring.stringify({

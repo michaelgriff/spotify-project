@@ -1,0 +1,51 @@
+# Architecture File
+
+createRoom() => {
+  2. Generate random room id
+  3. emit socket io join with room id
+  5. pass room id, auth token, and playlist id to next component (player)
+}
+
+loginToSpotify() {
+  1. User login with spotify  
+  4. create spotify playlist
+  3. pass auth token and playlist id to player
+}
+
+joinRoom() => {
+    1. user input room id   
+    2. emit socket io join with room id
+    3. load previous room data
+}
+
+addToList() => {
+    - search for the songs
+    - select a song from search results
+    - emit message to room containing song choice object
+    - add song to the playlist?
+    - emit updated list according to the new data
+}
+
+likeAndSort() => {
+    - front end validation to ensure you can only like once
+    - emit like event
+    - back end validation to ensure you can only like once
+    - update like totals on server
+    - sort on server
+    - emit updated list according to the new data
+
+
+// if were doing manual add button
+// maybe only avail to root user?
+addToQueue() => {
+    - take song at top of list and add to playlist/queue... (need to fio)
+    - emit remove event
+    - users receive event
+    - list updates to correspond to changes
+}
+
+Adding/Organizing Queue/PLaylist/List? (general stuff):
+ - All songs added to list will be added to Playlist
+ - songs to be added to playlist must have one like before added
+ - checking for end of song? -- not sure how will work...
+ - are we confirmed doing playlist?

@@ -7,6 +7,8 @@ import {
 } from "../socket-frontend/socket";
 import io from "socket.io-client";
 
+import getHashParams from "../utils/getHashParams";
+
 import SearchBar from "../components/SearchBar";
 import SongList from "../components/SongList";
 import AddToQueueButton from "../components/AddToQueueButton";
@@ -15,6 +17,13 @@ import SkipButton from "../components/SkipButton";
 const socket = io("http://localhost:8888");
 
 const Player = () => {
+  const params = getHashParams(window);
+  if (params.access_token) {
+    // emit to server
+    console.log("got an access token!");
+    console.log(params.access_token);
+    socket.emit("accessToken", params.access_token);
+  }
   const rooms = ["A", "B", "C"];
   const [room, setRoom] = useState(rooms[0]);
   const [message, setMessage] = useState("");
