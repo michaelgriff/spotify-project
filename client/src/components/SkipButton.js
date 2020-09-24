@@ -3,10 +3,8 @@ import React from "react";
 import { spotifyAuthContext } from "../contexts/spotifyAuthContext";
 
 const SkipButton = (props) => {
-  const { spotifyWebApi } = React.useContext(spotifyAuthContext);
-
   const skipToNext = async (spotifyClient) => {
-    await spotifyClient.skipToNext();
+    // await spotifyClient.skipToNext();
     alert("skipped");
   };
 
@@ -27,7 +25,7 @@ const SkipButton = (props) => {
     <div>
       <button
         onClick={() => {
-          skipToNext(spotifyWebApi);
+          // skipToNext(spotifyWebApi);
           remove();
         }}
       >
