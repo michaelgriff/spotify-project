@@ -2,6 +2,8 @@ const { Router } = require('express');
 const request = require('request'); // "Request" library
 const querystring = require('querystring');
 
+const { v4: uuidv4 } = require('uuid');
+
 const generateRandomString = require('../utils/generateRandomString');
 const envVars = require('../env/production');
 
@@ -79,9 +81,10 @@ router.get('/callback', (req, res) => {
 
         // we can also pass the token to the browser to make requests from there
         res.redirect(
-          `http://localhost:3000/player/${querystring.stringify({
+          `http://localhost:3000/player#${querystring.stringify({
             access_token: accessToken,
             refresh_token: refreshToken,
+            uuid: uuidv4(),
           })}`,
         );
       } else {
