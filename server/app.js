@@ -6,8 +6,8 @@
  * For more information, read
  * https://developer.spotify.com/web-api/authorization-guide/#authorization_code_flow
  */
-import Spotify from 'spotify-web-api-js';
 
+const axios = require('axios');
 const http = require('http');
 const express = require('express'); // Express web server framework
 const cors = require('cors');
@@ -31,6 +31,7 @@ const spotifyWebApi = new Spotify();
 // set up socket io
 const io = socketio(server);
 io.on('connection', (socket) => {
+  let roomAccessToken;
   console.log(`new websocket connection from ${socket.id}`);
 
   socket.on('disconnect', () => console.log(`Disconnected: ${socket.id}`));
@@ -47,7 +48,29 @@ io.on('connection', (socket) => {
   });
 
   socket.on('accessToken', (accessToken) => {
-    spotifyWebApi.setAccessToken(accessToken);
+    console.log('ye');
+    roomAccessToken = accessToken;
+    // spotifyWebApi.setAccessToken(accessToken);
+  });
+
+  socket.on('search', async (query) => {
+    //have to inlcude query in url
+    const config = {
+      method: 'get',
+      url: 'https://api.spotify.com/v1/search?q=drake&type=track',
+      headers: { 'Authorization': `Bearer ${roomAccessToken}` },
+    };
+
+    let response = await axios(config);
+    console.log(response.data);
+    socket.emit('searchResults', response.data.tracks.items);
+  });
+
+  socket.on('updateQueue', (data) => {
+    console.log('sending updating queue message');
+    const { updatedQueue, roomId } = data;
+    console.log(updatedQueue);
+    io.to(roomId).emit('updatedQueueResults', updatedQueue);
   });
 });
 

@@ -17,29 +17,38 @@ import SkipButton from "../components/SkipButton";
 const socket = io("http://localhost:8888");
 
 const Player = () => {
+  const [roomId, setRoomId] = useState();
+  const [message, setMessage] = useState("");
+  const [queue, setQueue] = useState([]);
+
   const params = getHashParams(window);
+  console.log(params);
+  if (params.uuid) {
+    socket.emit("join", params.uuid);
+    if (roomId !== params.uuid) {
+      setRoomId(params.uuid);
+    }
+  }
+
   if (params.access_token) {
     // emit to server
     console.log("got an access token!");
     console.log(params.access_token);
+    console.log(params.uuid);
+    // giving the token to the backend
     socket.emit("accessToken", params.access_token);
   }
-  const rooms = ["A", "B", "C"];
-  const [room, setRoom] = useState(rooms[0]);
-  const [message, setMessage] = useState("");
-  const [chat, setChat] = useState([]);
-  const [queue, setQueue] = useState([]);
 
   useEffect(() => {
-    if (room) initiateSocket(room);
-    subscribeToChat((err, data) => {
-      if (err) return;
-      setChat((oldChats) => [data, ...oldChats]);
-    });
-    return () => {
-      disconnectSocket();
-    };
-  }, [room]);
+    if (roomId) initiateSocket(roomId);
+    // subscribeToChat((err, data) => {
+    //   if (err) return;
+    //   setChat((oldChats) => [data, ...oldChats]);
+    // });
+    // return () => {
+    //   disconnectSocket();
+    // };
+  }, [roomId]);
 
   const likeAndSort = (item) => {
     // we create a new copy of the queue so react
@@ -79,30 +88,15 @@ const Player = () => {
 
     <div>
       <h1>Player</h1>
-      <SearchBar queue={queue} setQueue={setQueue} />
+      <SearchBar
+        queue={queue}
+        setQueue={setQueue}
+        socket={socket}
+        roomId={params.uuid}
+      />
       <SongList queue={queue} setQueue={setQueue} likeAndSort={likeAndSort} />
       <AddToQueueButton queue={queue} setQueue={setQueue} />
       <SkipButton queue={queue} setQueue={setQueue} />
-
-      <div>
-        <h1>Room: {room}</h1>
-        {rooms.map((r, i) => (
-          <button onClick={() => setRoom(r)} key={i}>
-            {r}
-          </button>
-        ))}
-        <h1>Live Chat:</h1>
-        <input
-          type="text"
-          name="name"
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-        />
-        <button onClick={() => sendMessage(room, message)}>Send</button>
-        {chat.map((m, i) => (
-          <p key={i}>{m}</p>
-        ))}
-      </div>
     </div>
   );
 };

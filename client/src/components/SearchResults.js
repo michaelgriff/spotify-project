@@ -2,13 +2,24 @@ import React from "react";
 
 const SearchResults = (props) => {
   const items = props.items;
+
+  props.socket.on("updatedQueueResults", (updatedQueueResults) => {
+    console.log("setting the queue from server");
+    console.log(updatedQueueResults);
+    props.setQueue(updatedQueueResults);
+  });
   let itemList = items.map((item, index) => {
     return (
       <li key={index}>
         <button
           onClick={() => {
             item.likeTot = 0;
-            props.setQueue([...props.queue, item]);
+            const updatedQueue = [...props.queue, item];
+
+            props.socket.emit("updateQueue", {
+              updatedQueue,
+              roomId: props.roomId,
+            });
             props.setResults(null);
           }}
         >

@@ -6,6 +6,10 @@ const SearchBar = (props) => {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState();
 
+  props.socket.on("searchResults", (response) => {
+    console.log("we received the message");
+    setResults(response);
+  });
   // const { spotifyWebApi } = React.useContext(spotifyAuthContext);
 
   const handleChange = (event) => {
@@ -13,14 +17,16 @@ const SearchBar = (props) => {
   };
 
   const handleSubmit = (event) => {
-    // search(spotifyWebApi, query);
+    console.log("called handle submit");
+    search(query);
     setQuery("");
     event.preventDefault();
   };
 
-  const search = async (spotifyClient, query) => {
-    const response = await spotifyClient.searchTracks(query);
-    setResults(response.tracks.items);
+  const search = async (query) => {
+    props.socket.emit("search", query);
+    // const response = await spotifyClient.searchTracks(query);
+    // setResults(response.tracks.items);
   };
 
   return (
@@ -38,6 +44,8 @@ const SearchBar = (props) => {
           setQueue={props.setQueue}
           queue={props.queue}
           setResults={setResults}
+          roomId={props.roomId}
+          socket={props.socket}
         />
       ) : null}
     </div>
