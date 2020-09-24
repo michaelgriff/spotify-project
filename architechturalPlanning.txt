@@ -1,13 +1,14 @@
 # Architecture File
 
 createRoom() => {
-  2. Generate random room id
-  3. emit socket io join with room id
   5. pass room id, auth token, and playlist id to next component (player)
 }
 
 loginToSpotify() {
-  1. User login with spotify  
+  2. Generate random room id
+  3. emit socket io join with room id
+  1. User login with spotify
+  2. On successful login, send auth creds to backend room state
   4. create spotify playlist
   3. pass auth token and playlist id to player
 }
