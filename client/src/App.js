@@ -7,8 +7,6 @@ import Player from "./pages/Player";
 import CreateRoom from "./pages/CreateRoom";
 import About from "./pages/About";
 
-const spotifyWebApi = new Spotify();
-
 const App = () => {
   return (
     <Router>
