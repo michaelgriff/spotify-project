@@ -26,7 +26,7 @@ const server = http.createServer(app);
 app.use(cors()).use(cookieParser());
 app.use('/', spotifyAuthorizationRouter);
 
-const spotifyWebApi = new Spotify();
+// const spotifyWebApi = new Spotify();
 
 // set up socket io
 const io = socketio(server);
@@ -39,6 +39,7 @@ io.on('connection', (socket) => {
   socket.on('join', (room) => {
     console.log(`Socket ${socket.id} joining ${room}`);
     socket.join(room);
+    io.to(room).emit('newUser');
   });
 
   socket.on('chat', (data) => {
@@ -50,15 +51,16 @@ io.on('connection', (socket) => {
   socket.on('accessToken', (accessToken) => {
     console.log('ye');
     roomAccessToken = accessToken;
+    socket.emit('accessTokenSet', accessToken);
     // spotifyWebApi.setAccessToken(accessToken);
   });
 
-  socket.on('search', async (query) => {
-    //have to inlcude query in url
+  socket.on('search', async (data) => {
+    const {query, token} = data;
     const config = {
       method: 'get',
-      url: 'https://api.spotify.com/v1/search?q=drake&type=track',
-      headers: { 'Authorization': `Bearer ${roomAccessToken}` },
+      url: `https://api.spotify.com/v1/search?q=${query}&type=track`,
+      headers: { 'Authorization': `Bearer ${token}` },
     };
 
     let response = await axios(config);
@@ -66,11 +68,40 @@ io.on('connection', (socket) => {
     socket.emit('searchResults', response.data.tracks.items);
   });
 
+  socket.on('skip', async (token) => {
+    const config = {
+      method: 'post',
+      url: 'https://api.spotify.com/v1/me/player/next',
+      headers: { 'Authorization': `Bearer ${token}` },
+    };
+
+    await axios(config);
+    socket.emit('skipped');
+  })
+
+  socket.on('addToQueue', async (data) => {
+    const {trackURI, token} = data
+    console.log(trackURI);
+    const config = {
+      method: 'post',
+      url: `https://api.spotify.com/v1/me/player/queue?uri=${trackURI}`,
+      headers: { 'Authorization': `Bearer ${token}` },
+    };
+
+    await axios(config);
+    socket.emit('added');
+  })
+
   socket.on('updateQueue', (data) => {
     console.log('sending updating queue message');
     const { updatedQueue, roomId } = data;
     console.log(updatedQueue);
     io.to(roomId).emit('updatedQueueResults', updatedQueue);
+  });
+
+  socket.on('likeAndSort', (data) => {
+    const { queue, roomId } = data;
+    io.to(roomId).emit('likeAndSortResults', queue);
   });
 });
 
