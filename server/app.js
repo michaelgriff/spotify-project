@@ -98,11 +98,6 @@ io.on('connection', (socket) => {
     console.log(updatedQueue);
     io.to(roomId).emit('updatedQueueResults', updatedQueue);
   });
-
-  socket.on('likeAndSort', (data) => {
-    const { queue, roomId } = data;
-    io.to(roomId).emit('likeAndSortResults', queue);
-  });
 });
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));

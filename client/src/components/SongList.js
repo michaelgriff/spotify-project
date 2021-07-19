@@ -8,7 +8,7 @@ const SongList = (props) => {
 
   props.socket.on("updatedQueueResults", (updatedQueueResults) => {
     console.log("setting the queue from server");
-    console.log(updatedQueueResults);
+    console.log('this is the updated queue:' + updatedQueueResults[0]);
     props.setQueue(updatedQueueResults);
   });
 

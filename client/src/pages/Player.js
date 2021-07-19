@@ -65,6 +65,8 @@ const Player = () => {
   const likeAndSort = (item) => {
     // we create a new copy of the queue so react
     // knows to rerender it
+    
+    console.log('in like and sort');
     var tempQueue = [...queue];
     var index = queue.indexOf(item);
     tempQueue[index].likeTot += 1;
@@ -76,8 +78,8 @@ const Player = () => {
     }
 
     tempQueue.sort(compare);
-
-    socket.emit('likeAndSort', {tempQueue, roomId})
+    console.log(tempQueue.length);
+    socket.emit('updateQueue', {updatedQueue: tempQueue, roomId})
   }
     // setQueue(tempQueue);
   
