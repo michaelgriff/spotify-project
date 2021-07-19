@@ -18,13 +18,13 @@ const SearchBar = (props) => {
 
   const handleSubmit = (event) => {
     console.log("called handle submit");
-    search(query);
+    search(query, props.accessToken);
     setQuery("");
     event.preventDefault();
   };
 
-  const search = async (query) => {
-    props.socket.emit("search", query);
+  const search = async (query, token) => {
+    props.socket.emit("search", {query, token});
     // const response = await spotifyClient.searchTracks(query);
     // setResults(response.tracks.items);
   };

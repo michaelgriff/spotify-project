@@ -17,26 +17,38 @@ import SkipButton from "../components/SkipButton";
 const socket = io("http://localhost:8888");
 
 const Player = () => {
+  
   const [roomId, setRoomId] = useState();
   const [message, setMessage] = useState("");
   const [queue, setQueue] = useState([]);
+  const [join, setJoin] = useState(true);
+  const [accessToken, setAcessToken] = useState();
 
   const params = getHashParams(window);
   console.log(params);
-  if (params.uuid) {
+  console.log(params);
+  if (params.uuid && join) {
+    setJoin(false);
     socket.emit("join", params.uuid);
     if (roomId !== params.uuid) {
       setRoomId(params.uuid);
     }
   }
 
-  if (params.access_token) {
+  socket.on('newUser', () => {
+    socket.emit("accessToken", params.access_token);
+  }) 
+
+  socket.on("accessTokenSet", (token) => {
+    console.log('got an access token');
+    setAcessToken(token);
+    console.log('access token is ' + accessToken);
+  });
+
+  if (params.access_token && !(accessToken)) {
     // emit to server
     console.log("got an access token!");
-    console.log(params.access_token);
-    console.log(params.uuid);
-    // giving the token to the backend
-    socket.emit("accessToken", params.access_token);
+    setAcessToken(params.access_token);
   }
 
   useEffect(() => {
@@ -64,8 +76,11 @@ const Player = () => {
     }
 
     tempQueue.sort(compare);
-    setQueue(tempQueue);
-  };
+
+    socket.emit('likeAndSort', {tempQueue, roomId})
+  }
+    // setQueue(tempQueue);
+  
 
   return (
     // // player
@@ -88,15 +103,17 @@ const Player = () => {
 
     <div>
       <h1>Player</h1>
+      <p>{params.uuid}</p>
       <SearchBar
         queue={queue}
         setQueue={setQueue}
         socket={socket}
         roomId={params.uuid}
+        accessToken={accessToken}
       />
-      <SongList queue={queue} setQueue={setQueue} likeAndSort={likeAndSort} />
-      <AddToQueueButton queue={queue} setQueue={setQueue} />
-      <SkipButton queue={queue} setQueue={setQueue} />
+      <SongList queue={queue} setQueue={setQueue} likeAndSort={likeAndSort} socket={socket} />
+      <AddToQueueButton queue={queue} setQueue={setQueue} socket={socket} accessToken={accessToken}/>
+      <SkipButton queue={queue} setQueue={setQueue} socket={socket} accessToken={accessToken}/>
     </div>
   );
 };

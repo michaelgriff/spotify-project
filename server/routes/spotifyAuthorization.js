@@ -75,9 +75,8 @@ router.get('/callback', (req, res) => {
           console.log(body);
         });
 
-        // pass accessToken to the room !
-
         // DO THAT HERE
+        // store access token, refresh token, and uuid in the db and then redirect with juust the uuid
 
         // we can also pass the token to the browser to make requests from there
         res.redirect(

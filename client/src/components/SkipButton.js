@@ -3,8 +3,14 @@ import React from "react";
 import { spotifyAuthContext } from "../contexts/spotifyAuthContext";
 
 const SkipButton = (props) => {
-  const skipToNext = async (spotifyClient) => {
+  props.socket.on("skipped", () => {
+    console.log("skipped");
+    remove();
+  });
+
+  const skipToNext = async (token) => {
     // await spotifyClient.skipToNext();
+    props.socket.emit("skip", token);
     alert("skipped");
   };
 
@@ -25,8 +31,7 @@ const SkipButton = (props) => {
     <div>
       <button
         onClick={() => {
-          // skipToNext(spotifyWebApi);
-          remove();
+          skipToNext(props.accessToken);
         }}
       >
         Skip to Next

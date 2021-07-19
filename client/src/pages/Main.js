@@ -5,14 +5,14 @@ const Main = () => {
   // create a room button
   // join a room text box
   const [query, setQuery] = useState("");
-  const [submit, setSubmit] = useState();
+  const [submit, setSubmit] = useState(false);
 
   const handleChange = (event) => {
     setQuery(event.target.value);
   };
 
   const handleSubmit = (event) => {
-    setSubmit(1);
+    setSubmit(true);
     event.preventDefault();
   };
 
@@ -28,7 +28,7 @@ const Main = () => {
         </label>
         <input type="submit" value="Submit" />
       </form>
-      {submit ? <Redirect to="/player" /> : null}
+      {submit ? <Redirect to={`/player#uuid=${query}`} /> : null}
     </div>
   );
 };

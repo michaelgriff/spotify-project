@@ -3,8 +3,14 @@ import React from "react";
 import { spotifyAuthContext } from "../contexts/spotifyAuthContext";
 
 const AddToQueueButton = (props) => {
-  const addToQueue = async (spotifyClient, trackURI) => {
+  props.socket.on("added", () => {
+    console.log("added");
+    remove();
+  });
+
+  const addToQueue = async (trackURI, token) => {
     // await spotifyClient.addToQueue(trackURI);
+    props.socket.emit('addToQueue', {trackURI, token});
   };
 
   const remove = () => {
@@ -23,8 +29,9 @@ const AddToQueueButton = (props) => {
   return (
     <button
       onClick={() => {
-        // addToQueue(spotifyWebApi, props.queue[0].uri);
-        remove();
+        if (props.queue[0]) {
+          addToQueue(props.queue[0].uri, props.accessToken);
+        }
       }}
     >
       Add To Queue
