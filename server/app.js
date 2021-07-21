@@ -13,10 +13,14 @@ const express = require('express'); // Express web server framework
 const cors = require('cors');
 const cookieParser = require('cookie-parser');
 const socketio = require('socket.io');
+const { query } = require('./utils/db');
 
 const spotifyAuthorizationRouter = require('./routes/spotifyAuthorization');
 
 const PORT = 8888;
+
+// Helper function to easily import env vars
+require('dotenv').config();
 
 // set up express server
 const app = express();
@@ -56,7 +60,7 @@ io.on('connection', (socket) => {
   });
 
   socket.on('search', async (data) => {
-    const {query, token} = data;
+    const { query, token } = data;
     const config = {
       method: 'get',
       url: `https://api.spotify.com/v1/search?q=${query}&type=track`,
@@ -77,10 +81,10 @@ io.on('connection', (socket) => {
 
     await axios(config);
     socket.emit('skipped');
-  })
+  });
 
   socket.on('addToQueue', async (data) => {
-    const {trackURI, token} = data
+    const { trackURI, token } = data;
     console.log(trackURI);
     const config = {
       method: 'post',
@@ -90,7 +94,7 @@ io.on('connection', (socket) => {
 
     await axios(config);
     socket.emit('added');
-  })
+  });
 
   socket.on('updateQueue', (data) => {
     console.log('sending updating queue message');
@@ -101,3 +105,12 @@ io.on('connection', (socket) => {
 });
 
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
+
+const testmethod = async () => {
+  console.log('about to call db');
+  const foo = await query('SELECT * from rooms');
+  console.log('query results');
+  console.log(foo);
+};
+
+testmethod();
